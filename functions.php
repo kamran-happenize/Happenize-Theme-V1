@@ -125,6 +125,10 @@ function happenize_theme_scripts() {
     wp_enqueue_script( 'happenize_theme-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
 
     wp_enqueue_script( 'happenize_theme-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20151215', true );
+	
+	wp_enqueue_script( 'happenize_theme-bootstrap-javascript', get_template_directory_uri() . '/js/bootstrap.min.js', array(), '20151215', true );
+	
+	wp_enqueue_script( 'happenize_theme-bootstrap-css', get_template_directory_uri() . '/css/bootstrap.min.css', array(), '20151215', false );
 
     if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
         wp_enqueue_script( 'comment-reply' );
@@ -177,20 +181,26 @@ function theme_prefix_setup() {
 }
 add_action( 'after_setup_theme', 'theme_prefix_setup' );
 
-
-// changing the logo link from wordpress.org to your site
+/**
+ * changing the logo link from wordpress.org to your site.
+ */
 function mb_login_url() {
     return home_url();
 }
 add_filter( 'login_headerurl', 'mb_login_url' );
 
-// changing the alt text on the logo to show your site name
+
+/**
+ * changing the alt text on the logo to show your site name.
+ */
 function mb_login_title() {
     return get_option( 'blogname' );
 }
 add_filter( 'login_headertitle', 'mb_login_title' );
 
-
+/**
+ * changing the the logo of login page.
+ */
 function my_login_logo_one() {
 
     $custom_logo_id = get_theme_mod( 'custom_logo' );
@@ -208,3 +218,27 @@ background-image: url(<?php echo $custom_logo_url;
 <?php
 }
 add_action( 'login_enqueue_scripts', 'my_login_logo_one' );
+
+function mytheme_customize_register( $wp_customize ) {
+
+    $wp_customize->add_section( 'mytheme_company_section' , array(
+        'title'      => __( 'Theme Options', 'mytheme' ),
+        'priority'   => 30,
+    ));
+
+    $wp_customize->add_setting( 'mytheme_company-name', array());
+    $wp_customize->add_control( new WP_Customize_Control(
+        $wp_customize,
+        'mytheme_company_control',
+            array(
+                'label'      => __( 'Company Name', 'mytheme' ),
+                'section'    => 'mytheme_company_section',
+                'settings'   => 'mytheme_company-name',
+                'priority'   => 1
+            )
+        )
+    );
+
+    // ..repeat ->add_setting() and ->add_control() for mytheme_company-division
+}
+add_action( 'customize_register', 'mytheme_customize_register' );
